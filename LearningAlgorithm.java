@@ -47,6 +47,10 @@ public class LearningAlgorithm
 			Collections.sort(learners);
 			System.out.println(run + " " + learners.get(0).fitness);
 
+			for (Learner l : learners) {
+				l.age++;
+			}
+
 			Learner[] newGeneration = new Learner[NUM_GEN];
 			//generate children through mating
 			for (int k = 0; k < (int)(NUM_GEN * REPRODUCTION_RATE); k++)
