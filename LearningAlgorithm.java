@@ -4,17 +4,14 @@ import java.io.*;
 public class LearningAlgorithm
 {
 	public static final int POP_SIZE = 100;
-	public static final int MAX_MUTATION_RATE = 100; //value for 100% chance of mutation occuring
 	public static final int NUM_RUNS = 200; //number of runs to learn each time this algo is run
-	public static int TOURNAMENT_SIZE = 8; //size of tournament for tournament mating algorithm
-	public static int MUTATION_RATE = 10; //mutation rate out of MAX_MUTATION_RATE
-	public static double MUTATION_AMOUNT = 0.2; //fraction of original range to mutate by
-	public static int NUM_GEN = 50; //number of new pop introduced in each generation
-	public static double REPRODUCTION_RATE = 1.0;
+	public static double REPRODUCTION_RATE = 0.99;
 	public static int THREAD_NUM = 20; //maximum number of concurrent threads to run.
 	public static final boolean newFile = true;
 	public ArrayList<Learner> learners;
-
+	public static double MUTATION_RATE = 0.001;
+	public static final int NUM_GEN = 20;
+	public static final int TOURNAMENT_SIZE = 50;
 
 	public LearningAlgorithm ()
 	{
@@ -46,28 +43,15 @@ public class LearningAlgorithm
 		}
 		for (int run = 0; run < NUM_RUNS; run++)
 		{
-			if (run+totalRuns >= 3)
-			{
-				REPRODUCTION_RATE = 0.9;
-			}
-			if (run + totalRuns >= 6)
-			{
-				REPRODUCTION_RATE = 0.7;
-				NUM_GEN = 60;
-			}
-			if (run + totalRuns >= 8)
-			{
-				REPRODUCTION_RATE = 0.5;
-				NUM_GEN = 70;
-			}
 			multiThreadRun();
 			Collections.sort(learners);
 			System.out.println(run + " " + learners.get(0).fitness);
+
 			Learner[] newGeneration = new Learner[NUM_GEN];
 			//generate children through mating
 			for (int k = 0; k < (int)(NUM_GEN * REPRODUCTION_RATE); k++)
 			{
-				newGeneration[k] = tournamentMating();
+				newGeneration[k] = reproduce(roulette(), roulette());
 			}
 			//generate immigrants
 			for (int k = (int)(NUM_GEN * REPRODUCTION_RATE); k < NUM_GEN; k++)
@@ -85,6 +69,29 @@ public class LearningAlgorithm
 			if (run % 2 == 0)
 				saveToFile(run+totalRuns, learners);
 		}
+	}
+
+	public Learner roulette() {
+		int currTotalFitness = 0;
+		for (int i = 0; i < learners.size(); i++) {
+			currTotalFitness += learners.get(i).fitness;
+		}
+
+		double[] learnersD = new double[learners.size()];
+		for (int i = 0; i < learners.size(); i++) {
+			learnersD[i] = learners.get(i).fitness / currTotalFitness;
+		}
+
+		double randomPoint = Math.random();
+
+		double currPoint = 0;
+		int i = 0;
+		while (currPoint <= randomPoint && i < learners.size()) {
+			currPoint += learnersD[i];
+			i++;
+		}
+
+		return learners.get(i);
 	}
 
 	public Learner tournamentMating()
@@ -171,15 +178,15 @@ public class LearningAlgorithm
 	*/
 	public void mutate(double[] weights)
 	{
-		for (int i = 0; i < Learner.NUM_WEIGHTS; i++)
+		for (int i = 0; i < Learner.NUM_WEIGHTS - 1; i++)
 		{
-			int mutationChance = (int)(Math.random()*MAX_MUTATION_RATE);
+			double mutationChance = Math.random();
 			if (mutationChance < MUTATION_RATE)
 			{
-				//randomly mutate the value by up to +/-25% of the initial range
-				weights[i] += Math.random()*(Learner.MAX_WEIGHT - Learner.MIN_WEIGHT)*MUTATION_AMOUNT - 0.5*MUTATION_AMOUNT*(Learner.MAX_WEIGHT - Learner.MIN_WEIGHT);
+				weights[i] = Math.random()*(Learner.MAX_WEIGHT - Learner.MIN_WEIGHT) + Learner.MIN_WEIGHT;
 			}
 		}
+		weights[Learner.NUM_WEIGHTS - 1] = Math.random() * (Learner.MAX_REWARD_WEIGHT);
 	}
 
 	public void saveToFile(int runs, ArrayList<Learner> learners) throws FileNotFoundException
@@ -192,15 +199,15 @@ public class LearningAlgorithm
 		}
 		out.close();
 	}
-	
-	public void singleThreadRun() 
+
+	public void singleThreadRun()
 	{
 		for (int i = 0; i < POP_SIZE; i++)
 		{
 			learners.get(i).run();
 		}
 	}
-	
+
 	public void multiThreadRun()
 	{
 		Thread[] threads = new Thread[THREAD_NUM];
