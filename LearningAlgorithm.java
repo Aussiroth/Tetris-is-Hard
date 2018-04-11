@@ -5,12 +5,13 @@ public class LearningAlgorithm
 {
 	public static final int POP_SIZE = 100;
 	public static final int NUM_RUNS = 200; //number of runs to learn each time this algo is run
-	public static double REPRODUCTION_RATE = 0.99;
+	public static double REPRODUCTION_RATE = 1;
 	public static int THREAD_NUM = 20; //maximum number of concurrent threads to run.
 	public static final boolean newFile = true;
 	public ArrayList<Learner> learners;
+	public static double CROSSOVER_RATE = 0.75;
 	public static double MUTATION_RATE = 0.001;
-	public static final int NUM_GEN = 20;
+	public static final int NUM_GEN = 99; //determines extent of elitism
 	public static final int TOURNAMENT_SIZE = 50;
 
 	public LearningAlgorithm ()
@@ -46,10 +47,10 @@ public class LearningAlgorithm
 			multiThreadRun();
 			Collections.sort(learners);
 			System.out.println(run + " " + learners.get(0).fitness);
-
+			/*
 			for (Learner l : learners) {
 				l.age++;
-			}
+			}*/
 
 			Learner[] newGeneration = new Learner[NUM_GEN];
 			//generate children through mating
@@ -153,25 +154,20 @@ public class LearningAlgorithm
 	*/
 	public Learner reproduce(Learner first, Learner second)
 	{
-		int crossoverPoint = (int)(Math.random()*Learner.NUM_WEIGHTS);
+		double crossoverChance = Math.random();
+		int crossoverPoint = 0;
+		if (crossoverChance < CROSSOVER_RATE) crossoverPoint = (int)(Math.random()*Learner.NUM_WEIGHTS);
+		if (first.fitness > second.fitness) crossoverPoint = Learner.NUM_WEIGHTS;
+
 		double[] newW = new double[Learner.NUM_WEIGHTS];
-		/*for (int i = 0; i < crossoverPoint; i++)
+		for (int i = 0; i < crossoverPoint; i++)
 		{
 			newW[i] = first.weights[i];
 		}
 		for (int i = crossoverPoint; i < Learner.NUM_WEIGHTS; i++)
 		{
 			newW[i] = second.weights[i];
-		}*/
-		for (int i = 0; i < Learner.NUM_WEIGHTS; i++)
-		{
-			int selection = (int)Math.random()*2;
-			if (selection == 0)
-				newW[i] = first.weights[i];
-			else
-				newW[i] = second.weights[i];
 		}
-		//perform mutation here
 		mutate(newW);
 		return new Learner(newW);
 	}

@@ -9,7 +9,7 @@ class Learner implements Comparable<Learner>, Runnable
 	public static int NUM_TETRIS = 1;
 	public double[] weights;
 	public int fitness = -1;
-	public int age = 0;
+	//public int age = 0;
 
 	public Learner (double[] inWeights, int fitness)
 	{
@@ -57,8 +57,9 @@ class Learner implements Comparable<Learner>, Runnable
 	//this definition is so that collections.sort sorts by descending order
 	public int compareTo(Learner other)
 	{
-		if (other.age == this.age) return other.fitness - this.fitness;
-		return this.age - other.age;
+		//if (other.age == this.age) return other.fitness - this.fitness;
+		//return this.age - other.age;
+		return other.fitness - this.fitness;
 	}
 
 	public String toString()
