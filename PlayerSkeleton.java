@@ -32,7 +32,7 @@ public class PlayerSkeleton {
 			System.exit(1);
 		}
 	}
-	
+
 	//implement this function to have a working system
 	public int pickMove(State s, int[][] legalMoves) {
 		int bestMove = 0;
@@ -55,7 +55,7 @@ public class PlayerSkeleton {
 		}
 		return bestMove;
 	}
-	
+
 	//This function takes in a NextState and a piece number.
 	//It finds the best move to make and returns the heuristic value of the resulting state.
 	public double lookaheadMove(NextState ns, int piece)
@@ -74,7 +74,7 @@ public class PlayerSkeleton {
 		}
 		return maxSoFar;
 	}
-	
+
 	public int run()
 	{
 		State s = new State();
@@ -85,7 +85,7 @@ public class PlayerSkeleton {
 		System.out.println(s.getRowsCleared());
 		return s.getRowsCleared();
 	}
-	
+
 	public void runNormal()
 	{
 		State s = new State();
@@ -103,19 +103,19 @@ public class PlayerSkeleton {
 		}
 		System.out.println("You have completed "+s.getRowsCleared()+" rows.");
 	}
-	
+
 	public static void main(String[] args) {
 		PlayerSkeleton ps = new PlayerSkeleton();
 		System.out.println(ps.run());
 		//ps.runNormal();
 	}
-	
+
 	public double getHeuristic(NextState ns)
 	{
 		double heuristic = 0;
 		//if is lost, then return minimum possible value
 		if (ns.hasLost())
-			return Integer.MIN_VALUE;
+			return heuristic;
 		//get col height heuristic
 		for (int i = 0; i < 10; i++)
 		{
@@ -137,7 +137,7 @@ public class PlayerSkeleton {
 		heuristic += weights[7] * ns.getRowsCleared();
 		return heuristic;
 	}
-	
+
 	public void printGrid(NextState ns)
 	{
 		int[][] grid = ns.getField();
@@ -150,11 +150,11 @@ public class PlayerSkeleton {
 			System.out.println();
 		}
 	}
-	
+
 	public void setWeights(double[] newWeights)
 	{
 		for (int i = 0; i < newWeights.length; i++)
 			weights[i] = newWeights[i];
 	}
-	
+
 }

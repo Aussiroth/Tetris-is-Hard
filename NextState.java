@@ -4,31 +4,31 @@ public class NextState {
 	public static final int N_PIECES = 7;
 
 	public boolean lost = false;
-	
+
 	//current turn
 	private int turn = 0;
 	private int cleared = 0;
-	
+
 	//each square in the grid - int means empty - other values mean the turn it was placed
 	private int[][] field = new int[ROWS][COLS];
 	//top row+1 of each column
 	//0 means empty
 	private int[] top = new int[COLS];
-	
-	
+
+
 	//number of next piece
 	protected int nextPiece;
-	
+
 	//all legal moves - first index is piece type - then a list of 2-length arrays
 	protected static int[][][] legalMoves = new int[N_PIECES][][];
-	
+
 	//indices for legalMoves
 	public static final int ORIENT = 0;
 	public static final int SLOT = 1;
-	
+
 	//possible orientations for a given piece type
 	protected static int[] pOrients = {1,2,4,4,4,2,2};
-	
+
 	//the next several arrays define the piece vocabulary in detail
 	//width of the pieces [piece ID][orientation]
 	protected static int[][] pWidth = {
@@ -68,7 +68,7 @@ public class NextState {
 		{{1,2,2},{3,2}},
 		{{2,2,1},{2,3}}
 	};
-	
+
 	//initialize legalMoves
 	{
 		//for each piece type
@@ -93,8 +93,8 @@ public class NextState {
 			}
 		}
 	}
-	
-	
+
+
 	public int[][] getField() {
 		return field;
 	}
@@ -106,7 +106,7 @@ public class NextState {
     public static int[] getpOrients() {
         return pOrients;
     }
-    
+
     public static int[][] getpWidth() {
         return pWidth;
     }
@@ -127,23 +127,23 @@ public class NextState {
 	public int getNextPiece() {
 		return nextPiece;
 	}
-	
+
 	public boolean hasLost() {
 		return lost;
 	}
-	
+
 	public int getRowsCleared() {
 		return cleared;
 	}
-	
+
 	public int getTurnNumber() {
 		return turn;
 	}
-	
+
 	//constructor
 	public NextState() {
 	}
-	
+
 	//special constructor for existing grid and piece and rows cleared.
 	public NextState(int[][] grid, int[] oldTop, int nPiece, int rCleared)
 	{
@@ -159,34 +159,34 @@ public class NextState {
 		nextPiece = nPiece;
 		cleared = rCleared;
 	}
-	
-	//gives legal moves for 
+
+	//gives legal moves for
 	public int[][] legalMoves() {
 		return legalMoves[nextPiece];
 	}
-	
+
 	//gives legal moves for input piece
 	public int[][] legalMoves(int n) {
 		return legalMoves[n];
 	}
-	
+
 	//make a move based on the move index - its order in the legalMoves list
 	public void makeMove(int move) {
 		makeMove(legalMoves[nextPiece][move]);
 	}
-	
+
 	//make a move based on an array of orient and slot
 	public void makeMove(int[] move) {
 		makeMove(move[ORIENT],move[SLOT]);
 	}
-	
+
 	//returns false if you lose - true otherwise
 	public boolean makeMove(int orient, int slot) {
 		turn++;
 		//height if the first column makes contact
 		int height = top[slot]-pBottom[nextPiece][orient][0];
 		//for each column beyond the first in the piece
-		for(int c = 1; c < pWidth[nextPiece][orient];c++) 
+		for(int c = 1; c < pWidth[nextPiece][orient];c++)
 		{
 			try
 			{
@@ -197,30 +197,30 @@ public class NextState {
 				System.out.println(slot + " " + c + " " + nextPiece + " " + orient + " " + c);
 			}
 		}
-		
+
 		//check if game ended
 		if(height+pHeight[nextPiece][orient] >= ROWS) {
 			lost = true;
 			return false;
 		}
 
-		
+
 		//for each column in the piece - fill in the appropriate blocks
 		for(int i = 0; i < pWidth[nextPiece][orient]; i++) {
-			
+
 			//from bottom to top of brick
 			for(int h = height+pBottom[nextPiece][orient][i]; h < height+pTop[nextPiece][orient][i]; h++) {
 				field[h][i+slot] = turn;
 			}
 		}
-		
+
 		//adjust top
 		for(int c = 0; c < pWidth[nextPiece][orient]; c++) {
 			top[slot+c]=height+pTop[nextPiece][orient][c];
 		}
-		
+
 		int rowsCleared = 0;
-		
+
 		//check for full rows - starting at the top
 		for(int r = height+pHeight[nextPiece][orient]-1; r >= height; r--) {
 			//check all columns in the row
@@ -251,18 +251,18 @@ public class NextState {
 
 		return true;
 	}
-	
+
 	public int getColumnHeight(int col)
 	{
 		return top[col];
 	}
-	
+
 	//difference between col and col+1.
 	public int getColumnHeightDiff(int col)
 	{
 		return Math.abs(top[col] - top[col+1]);
 	}
-	
+
 	public int getMaxColumnHeight()
 	{
 		int maxH = 0;
@@ -270,7 +270,7 @@ public class NextState {
 			maxH = Math.max(maxH, top[i]);
 		return maxH;
 	}
-	
+
 	public int getHoles()
 	{
 		int holes = 0;
@@ -279,7 +279,7 @@ public class NextState {
 			//start from top of each column and look downwards
 			for (int row = top[col]-1; row>=0; row--)
 			{
-				if (field[rol][col] == 0)
+				if (field[row][col] == 0)
 				{
 					holes++;
 				}
@@ -287,7 +287,7 @@ public class NextState {
 		}
 		return holes;
 	}
-	
+
 	//For each column, go to every row from bottom. Find the first hole and count number of blocks on this hole
 	public int getBlocksOnHoles(){
 	    int blocksOnHole = 0;
@@ -309,7 +309,7 @@ public class NextState {
         }
 	    return blocksOnHole;
     }
-	
+
     public int getRowTransition(){
 	    int transition = 0;
         //to identify if first column for each row is empty
@@ -345,7 +345,7 @@ public class NextState {
         }
         return transition;
     }
-    
+
     public int getColTransition(){
         int transition = 0;
         //to identify if first column for each row is empty
@@ -383,5 +383,3 @@ public class NextState {
         return transition;
     }
 }
-
-
