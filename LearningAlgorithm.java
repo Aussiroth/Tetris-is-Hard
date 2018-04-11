@@ -44,13 +44,15 @@ public class LearningAlgorithm
 		}
 		for (int run = 0; run < NUM_RUNS; run++)
 		{
-			multiThreadRun();
+			singleThreadRun();
 			Collections.sort(learners);
 			System.out.println(run + " " + learners.get(0).fitness);
 			/*
 			for (Learner l : learners) {
 				l.age++;
 			}*/
+			
+			if (run == 0) saveToFile(run+totalRuns, learners);
 
 			Learner[] newGeneration = new Learner[NUM_GEN];
 			//generate children through mating
@@ -71,8 +73,7 @@ public class LearningAlgorithm
 				i++;
 			}
 			//save data to file every 2 runs
-			if (run % 2 == 0)
-				saveToFile(run+totalRuns, learners);
+			saveToFile(run+totalRuns, learners);
 		}
 	}
 
@@ -91,7 +92,7 @@ public class LearningAlgorithm
 
 		double currPoint = 0;
 		int i = 0;
-		while (currPoint <= randomPoint && i < learners.size()) {
+		while (i < learners.size() - 1 && currPoint <= randomPoint) {
 			currPoint += learnersD[i];
 			i++;
 		}
