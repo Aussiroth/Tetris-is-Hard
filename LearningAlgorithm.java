@@ -1,5 +1,8 @@
 import java.util.*;
 import java.io.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class LearningAlgorithm
 {
@@ -8,10 +11,10 @@ public class LearningAlgorithm
 	public static final int NUM_RUNS = 200; //number of runs to learn each time this algo is run
 	public static int TOURNAMENT_SIZE = 8; //size of tournament for tournament mating algorithm
 	public static int MUTATION_RATE = 10; //mutation rate out of MAX_MUTATION_RATE
-	public static double MUTATION_AMOUNT = 0.2; //fraction of original range to mutate by
-	public static int NUM_GEN = 50; //number of new pop introduced in each generation
+	public static double MUTATION_AMOUNT = 0.1; //fraction of original range to mutate by
+	public static int NUM_GEN = 80; //number of new pop introduced in each generation
 	public static double REPRODUCTION_RATE = 1.0;
-	public static int THREAD_NUM = 20; //maximum number of concurrent threads to run.
+	public static int THREAD_NUM = 100; //maximum number of concurrent threads to run.
 	public static final boolean newFile = true;
 	public ArrayList<Learner> learners;
 
@@ -60,7 +63,8 @@ public class LearningAlgorithm
 				REPRODUCTION_RATE = 0.5;
 				NUM_GEN = 70;
 			}
-			multiThreadRun();
+			executorRun();
+			//multiThreadRun();
 			//singleThreadRun();
 			Collections.sort(learners);
 			System.out.println(run + " " + learners.get(0).fitness);
@@ -193,7 +197,7 @@ public class LearningAlgorithm
 		}
 		out.close();
 	}
-	
+	/*
 	public void singleThreadRun() 
 	{
 		for (int i = 0; i < POP_SIZE; i++)
@@ -227,7 +231,27 @@ public class LearningAlgorithm
 			}
 		}
 	}
-
+	*/
+	    public void executorRun() {
+        
+        List<Future<Integer>> fitnessLevels = new ArrayList<>();
+        
+        ExecutorService exec = Executors.newFixedThreadPool(THREAD_NUM);
+        
+        for (int i = 0; i < learners.size(); i++) {
+            Future<Integer> f = exec.submit(learners.get(i));
+            fitnessLevels.add(f);
+        }
+        
+        for (int i = 0; i < fitnessLevels.size(); i++) {
+            try {
+                Integer f = fitnessLevels.get(i).get();
+                learners.get(i).fitness = f;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 	public static void main(String[] args)
 	{
 		LearningAlgorithm la = new LearningAlgorithm();

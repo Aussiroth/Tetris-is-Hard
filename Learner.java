@@ -1,8 +1,9 @@
 import java.util.*;
+import java.util.concurrent.Callable;
 
-class Learner implements Comparable<Learner>, Runnable
+class Learner implements Comparable<Learner>, Callable<Integer>
 {
-	public static int NUM_WEIGHTS = 8;
+	public static int NUM_WEIGHTS = 5;
 	public static double MIN_WEIGHT = -8;
 	public static double MAX_WEIGHT = 2;
 	public static double MAX_REWARD_WEIGHT = 20;
@@ -37,7 +38,7 @@ class Learner implements Comparable<Learner>, Runnable
 		weights[NUM_WEIGHTS-1] = Math.random()*MAX_REWARD_WEIGHT;
 	}
 	
-	public void run()
+	public Integer call()
 	{
 		if (fitness < 0)
 		{
@@ -50,6 +51,7 @@ class Learner implements Comparable<Learner>, Runnable
 			}
 			fitness = fitness/NUM_TETRIS;
 		}
+			return  fitness;
 	}
 	
 	//compareTo is slightly different from usual

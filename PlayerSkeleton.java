@@ -20,10 +20,10 @@ public class PlayerSkeleton {
 		try
 		{
 			Scanner sc = new Scanner(new File("weights.txt"));
-			weights = new double[8];
+			weights = new double[5];
 			sc.nextInt();
 			sc.nextInt();
-			for (int i = 0; i < 8; i++)
+			for (int i = 0; i < 5; i++)
 				weights[i] = sc.nextDouble();
 		}
 		catch (FileNotFoundException fnfe)
@@ -32,9 +32,27 @@ public class PlayerSkeleton {
 			System.exit(1);
 		}
 	}
+		//implement this function to have a working system
+	public int pickMove(State s, int[][] legalMoves) {
+		int bestMove = 0;
+		double maxSoFar = Integer.MIN_VALUE;
+		for (int i = 0; i < legalMoves.length; i++)
+		{
+			NextState ns = new NextState(s.getField(), s.getTop(), s.getNextPiece());
+			ns.makeMove(i); //Make move for each legal move
+			double currValue = getHeuristic(ns);
+			if (currValue > maxSoFar)
+			{
+				maxSoFar = currValue;
+				bestMove = i;
+			}
+		}
+		return bestMove;
+	}
+	
 	
 	//implement this function to have a working system
-	public int pickMove(State s, int[][] legalMoves) {
+	public int pickMoveLookahead(State s, int[][] legalMoves) {
 		int bestMove = 0;
 		double maxSoFar = Integer.MIN_VALUE;
 		for (int i = 0; i < legalMoves.length; i++)
@@ -116,8 +134,13 @@ public class PlayerSkeleton {
 		//if is lost, then return minimum possible value
 		if (ns.hasLost())
 			return Integer.MIN_VALUE;
+		heuristic += weights[0] * ns.getRowTransition();
+		heuristic += weights[1] * ns.getColTransition();
+		heuristic += weights[2] * ns.getHoles();
+		heuristic += weights[3] * ns.wellFeature();
+		heuristic += weights[4] * ns.getRowsCleared();
 		//get col height heuristic
-		for (int i = 0; i < 10; i++)
+		/*for (int i = 0; i < 10; i++)
 		{
 			heuristic += weights[0] * ns.getColumnHeight(i);
 		}
@@ -135,6 +158,7 @@ public class PlayerSkeleton {
 		heuristic += weights[6] * ns.getColTransition();
 		//get cleared rows heuristic
 		heuristic += weights[7] * ns.getRowsCleared();
+		*/
 		return heuristic;
 	}
 	
