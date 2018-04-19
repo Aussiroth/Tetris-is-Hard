@@ -29,7 +29,7 @@ class Learner implements Comparable<Learner>, Callable<Integer>
 	public Learner ()
 	{
 		weights = new double[NUM_WEIGHTS];
-		//negative weights for evaluation function , range -100 to 0
+		//negative weights for evaluation function
 		for (int i = 0; i < NUM_WEIGHTS-1; i++)
 		{
 			weights[i] = Math.random()*(MAX_WEIGHT - MIN_WEIGHT) + MIN_WEIGHT;

@@ -304,26 +304,29 @@ public class NextState {
 		return (double) numHoles * 10;
 	}
 	
-	//For each column, go to every row from bottom. Find the first hole and count number of blocks on this hole
+	/*
+	Returns the total number of blocks on top of holes for each column.
+	This is defined as number of blocks on top of the lowest hole.
+	*/
 	public int getBlocksOnHoles(){
 	    int blocksOnHole = 0;
-	    int [] topOfEachColumn = getTop();
+		int bottomHole = 0;
 	    for(int col = 0; col < COLS; col++)
 		{
-	        boolean foundHole = false;
-	        for(int row = 0; row <= topOfEachColumn[col]; row++)
+	        for(int row = top[col]; row >= 0; row--)
 			{
-	           if(!foundHole && field[row][col] == 0)
+	           if(field[row][col] != 0)
 			   {
-	               foundHole = true;
+				   blocksOnHole++;
                }
-               else if(foundHole && field[row][col] != 0)
+               else if(field[row][col] == 0)
 			   {
-	               blocksOnHole++;
+				   bottomHole = row;
                }
             }
         }
-	    return blocksOnHole;
+		//return blocks counted minus blocks below lowest hole
+	    return blocksOnHole - bottomHole;
     }
 	
 	public double getRowTransition(){
@@ -374,7 +377,6 @@ public class NextState {
 		}
 		return wellSum;
 	}
-	
 }
 
 
