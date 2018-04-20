@@ -309,9 +309,9 @@ public class NextState {
 	public int getBlocksOnHoles(){
 	    int blocksOnHole = 0;
 		int bottomHole = 0;
-	    for (int col = 0; col < COLS; col++)
+	    for(int col = 0; col < COLS; col++)
 		{
-	        for (int row = top[col]; row >= 0; row--)
+	        for(int row = top[col]; row >= 0; row--)
 			{
 	           if (field[row][col] != 0)
 			   {
@@ -330,15 +330,15 @@ public class NextState {
 	public int getRowTransition(){
 		int rowTransitions = 0;
 		int lastCell = 1;
-		for (int row = 0;  row < ROWS;  row++) 
+		for (int row = 0;  i < ROWS;  i++) 
 		{
-			for (int col = 0;  col < COLS;  col++) 
+			for (int col = 0;  j < COLS;  j++) 
 			{
 				if ((field[row][col]== 0 && lastCell>0) || (field[row][col]>0 && lastCell==0))
 				{
 					rowTransitions++;
 				}
-				lastCell = field[row][col];
+				lastCell = field[i][j];
 			}
 			if (lastCell == 0) 
 				rowTransitions++;
@@ -350,14 +350,14 @@ public class NextState {
 	{
 		int colTransitions = 0;
 		for (int col = 0;  col < COLS;  col++) {
-			for (int row = top[col];  row > 0;  row--) 
+			for (int row = top[col];  i > 0;  i--) 
 			{
 				if ((field[row][col]== 0 && field[row-1][col]!= 0) || (field[row][col]!= 0 && field[row-1][col]==0)) 
 				{
 					colTransitions++;
 				}
 			}
-			if (field[0][col] == 0 && top[col] > col)
+			if (field[0][col] == 0 && top[j] > col)
 				colTransitions++;
 		}
 		return colTransitions;
