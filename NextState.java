@@ -286,20 +286,22 @@ public class NextState {
 		return maxH;
 	}
 	
-	public int getHoles()
+	public double getHoles()
 	{
+		
+		int[] top = getTop();
+		
 		int numHoles = 0;
-		for (int j = 0;  j < COLS;  j++) 
-		{
-			for (int i = top[j] - 1;  i >= 0;  i--) 
-			{
-				if (field[i][j] == 0) 
-				{
-					numHoles++;
+		for (int j = 0;  j < COLS;  j++) {
+			if (top[j] != 0) {
+				for (int i = top[j] - 1;  i >= 0;  i--) {
+					if (field[i][j] == 0) {
+						numHoles++;
+					}
 				}
 			}
 		}
-		return numHoles * 10;
+		return (double) numHoles * 10;
 	}
 	
 	/*
@@ -313,11 +315,11 @@ public class NextState {
 		{
 	        for(int row = top[col]; row >= 0; row--)
 			{
-	           if (field[row][col] != 0)
+	           if(field[row][col] != 0)
 			   {
 				   blocksOnHole++;
                }
-               else if (field[row][col] == 0)
+               else if(field[row][col] == 0)
 			   {
 				   bottomHole = row;
                }
@@ -327,61 +329,48 @@ public class NextState {
 	    return blocksOnHole - bottomHole;
     }
 	
-	public int getRowTransition(){
+	public double getRowTransition(){
 		int rowTransitions = 0;
 		int lastCell = 1;
-		for (int row = 0;  i < ROWS;  i++) 
-		{
-			for (int col = 0;  j < COLS;  j++) 
-			{
-				if ((field[row][col]== 0 && lastCell>0) || (field[row][col]>0 && lastCell==0))
-				{
+		for (int i = 0;  i < ROWS;  i++) {
+			for (int j = 0;  j < COLS;  j++) {
+				if ((field[i][j] == 0) != (lastCell == 0)) {
 					rowTransitions++;
 				}
 				lastCell = field[i][j];
 			}
-			if (lastCell == 0) 
-				rowTransitions++;
+			if (lastCell == 0) rowTransitions++;
 		}
-		return rowTransitions;
+		return (double) rowTransitions;
 	}
 	
-	public int getColTransition()
-	{
+	public double getColTransition(){
+		int[] top = getTop();
 		int colTransitions = 0;
-		for (int col = 0;  col < COLS;  col++) {
-			for (int row = top[col];  i > 0;  i--) 
-			{
-				if ((field[row][col]== 0 && field[row-1][col]!= 0) || (field[row][col]!= 0 && field[row-1][col]==0)) 
-				{
+		for (int j = 0;  j < State.COLS;  j++) {
+			for (int i = top[j] - 2;  i >= 0;  i--) {
+				if ((field[i][j] == 0) != (field[i + 1][j] == 0)) {
 					colTransitions++;
 				}
 			}
-			if (field[0][col] == 0 && top[j] > col)
-				colTransitions++;
+			if (field[0][j] == 0 && top[j] > 0) colTransitions++;
 		}
-		return colTransitions;
+		return (double) colTransitions;
 	}
 	
-	public int wellFeature(){
+		public int wellFeature(){
 		int wellSum = 0;
-		for (int j = 0;  j < COLS;  j++) 
-		{
-			for (int i = ROWS -1;  i >= 0;  i--) 
-			{
-				if (field[i][j] == 0)
-				{
-					if (j == 0 || field[i][j - 1] != 0) 
-					{
-						if (j == State.COLS - 1 || field[i][j + 1] != 0) 
-						{
-							int wellHeight = i - top[j] + 1;
+		int [] topOfEachColumn = getTop();
+		for (int j = 0;  j < COLS;  j++) {
+			for (int i = ROWS -1;  i >= 0;  i--) {
+				if (field[i][j] == 0) {
+					if (j == 0 || field[i][j - 1] != 0) {
+						if (j == State.COLS - 1 || field[i][j + 1] != 0) {
+							int wellHeight = i - topOfEachColumn[j] + 1;
 							wellSum += wellHeight * (wellHeight + 1) / 2;
 						}
 					}
-				} 
-				else 
-				{
+				} else {
 					break;
 				}
 			}
