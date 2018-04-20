@@ -59,7 +59,12 @@ public class PlayerSkeleton {
 		{
 			NextState ns = new NextState(s.getField(), s.getTop(), s.getNextPiece(), 0);
 			ns.makeMove(i);
-			double currValue = getHeuristic(ns);
+			double currValue = 0;
+			for (int j = 0; j < State.N_PIECES; j++)
+			{
+				currValue += lookaheadMove(ns, j);
+			}
+			currValue/=State.N_PIECES;
 			if (currValue > maxSoFar)
 			{
 				maxSoFar = currValue;
@@ -126,7 +131,7 @@ public class PlayerSkeleton {
 	public double getHeuristic(NextState ns)
 	{
 		double heuristic = 0;
-		//if is lost, then return huge negative value
+		//if is lost, then return minimum possible value
 		if (ns.hasLost())
 			return Integer.MIN_VALUE;
 		heuristic += weights[0] * ns.getRowTransition();
