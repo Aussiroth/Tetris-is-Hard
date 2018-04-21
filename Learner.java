@@ -3,11 +3,11 @@ import java.util.concurrent.Callable;
 
 class Learner implements Comparable<Learner>, Callable<Integer>
 {
-	public static int NUM_WEIGHTS = 5;
+	public static int NUM_WEIGHTS = 6;
 	public static double MIN_WEIGHT = -8;
 	public static double MAX_WEIGHT = 2;
 	public static double MAX_REWARD_WEIGHT = 20;
-	public static int NUM_TETRIS = 1;
+	public static int NUM_TETRIS = 2;
 	public double[] weights;
 	public int fitness = -1;
 	
@@ -29,7 +29,7 @@ class Learner implements Comparable<Learner>, Callable<Integer>
 	public Learner ()
 	{
 		weights = new double[NUM_WEIGHTS];
-		//negative weights for evaluation function , range -100 to 0
+		//negative weights for evaluation function , range -8 to 2
 		for (int i = 0; i < NUM_WEIGHTS-1; i++)
 		{
 			weights[i] = Math.random()*(MAX_WEIGHT - MIN_WEIGHT) + MIN_WEIGHT;
