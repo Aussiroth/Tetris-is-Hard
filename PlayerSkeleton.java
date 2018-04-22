@@ -123,8 +123,7 @@ public class PlayerSkeleton {
 	
 	public static void main(String[] args) {
 		PlayerSkeleton ps = new PlayerSkeleton();
-		System.out.println(ps.run());
-		//ps.runNormal();
+		ps.runNormal();
 	}
 	
 	public double getHeuristic(NextState ns)
